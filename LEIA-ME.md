@@ -1,148 +1,163 @@
 # Site da Formato Esquadrias
 
-Site institucional de uma página só (one page), feito em HTML/CSS/JavaScript puro.
-Não precisa de banco de dados, PHP, WordPress nem nada instalado — é só subir os
-arquivos para o Hostinger e o site já está no ar.
+Site institucional de uma página só, em HTML/CSS/JavaScript puro.
+**Não tem build**: nada de `npm install`, `npm run build`, Node ou TypeScript.
+Os arquivos que estão aqui são exatamente os que rodam no servidor.
 
 ---
 
 ## 1. O que tem nesta pasta
 
+Esta pasta **é o repositório Git**. Os arquivos do site ficam na raiz, porque o
+deploy por Git do Hostinger clona o repositório direto dentro do `public_html`
+do servidor — se houvesse uma pasta `public_html/` aqui dentro, o site sairia
+em `seudominio.com.br/public_html/`, quebrado.
+
 ```
-Site Formato Esquadrias/
-├── LEIA-ME.md                          ← este arquivo (NÃO sobe para o servidor)
-├── site-formato-para-hostinger.zip     ← PRONTO PARA UPLOAD (1,14 MB)
-├── Fotos/                              ← fotos originais (NÃO sobem para o servidor)
-└── public_html/            ← TUDO que está aqui dentro vai para o Hostinger
-    ├── index.html          ← a página em si (textos ficam aqui)
-    ├── .htaccess           ← configurações do servidor (cache, HTTPS)
-    ├── robots.txt          ← permite o Google indexar
-    ├── sitemap.xml         ← mapa do site para o Google
-    ├── css/style.css       ← cores, fontes, layout
-    ├── js/main.js          ← menu, animações, formulário → WhatsApp
-    └── img/
-        ├── logo-formato.png    ← logo do cabeçalho e do rodapé
-        ├── favicon.png         ← ícone da aba do navegador
-        ├── (11 fotos do site)  ← hero, produto-*, obra-*, curso, sobre
-        └── LEIA-ME-FOTOS.txt   ← de onde veio cada foto e como trocar
+Site Formato Esquadrias/            ← raiz do repositório
+├── index.html                      ← a página (todos os textos estão aqui)
+├── .htaccess                       ← gzip, cache, HTTPS, bloqueio do .git
+├── robots.txt / sitemap.xml        ← para o Google
+├── css/style.css                   ← cores, fontes, layout
+├── js/main.js                      ← menu, animações, formulário → WhatsApp
+├── img/                            ← logo, favicon e as 11 fotos do site
+├── LEIA-ME.md                      ← este arquivo
+│
+│   ── fora do repositório (.gitignore) ──
+├── Fotos/                          ← as 58 fotos originais, acervo
+└── site-formato-para-hostinger.zip ← pacote para upload manual
 ```
 
 ---
 
-## 2. Como subir para o Hostinger
+## 2. Como publicar
 
-### Opção A — Gerenciador de Arquivos (mais fácil, recomendado)
+### Opção A — Deploy por Git (recomendado)
 
-1. Entre no **hPanel** do Hostinger (`hpanel.hostinger.com`).
-2. Escolha o site → menu **Arquivos → Gerenciador de Arquivos**.
-3. Entre na pasta **`public_html`**.
-4. Se houver arquivos de exemplo lá dentro (`default.php`, `index.html` padrão da
-   Hostinger), **apague todos**.
-5. Clique em **Upload** e envie o arquivo **`site-formato-para-hostinger.zip`**
-   que já está pronto na raiz deste projeto.
-6. (Não precisa compactar nada — o zip já está montado com os arquivos na
-   posição certa, inclusive o `.htaccess`.)
-7. Clique com o botão direito no `.zip` no servidor → **Extract / Extrair**.
-8. Apague o `.zip` depois de extraído.
-9. Confirme que o `index.html` ficou **direto dentro de `public_html`**
-   (e não dentro de `public_html/public_html`).
+Depois de configurado, publicar uma mudança vira um `git push`.
 
-> ⚠️ Se um dia você refizer o zip na mão, lembre que o `.htaccess` começa com
-> ponto e o Windows o esconde: ative *Exibir → Itens ocultos* antes de compactar.
-> O site funciona sem ele, mas fica um pouco mais lento.
+**Configuração, uma vez só:**
 
-### Opção B — FTP (FileZilla)
+1. Crie um repositório no GitHub (`github.com/new`). Marque **Public** —
+   repositório privado exige configurar chave SSH no Hostinger.
+   **Não** marque "Add a README file": o repositório precisa nascer vazio.
+2. Conecte esta pasta ao repositório e envie:
+   ```bash
+   git remote add origin https://github.com/SEU-USUARIO/SEU-REPO.git
+   git push -u origin main
+   ```
+3. No hPanel do Hostinger: **Avançado → Git**.
+4. Em *Repositório*, cole a URL do GitHub; em *Branch*, `main`;
+   em *Diretório*, deixe **em branco** (isso significa a raiz do `public_html`).
+5. Clique em **Criar**. O Hostinger clona e o site sobe.
 
-1. No hPanel: **Arquivos → Contas de FTP** e anote host, usuário e senha.
-2. Abra o FileZilla, conecte com esses dados.
-3. No lado direito (servidor), entre em `public_html`.
-4. Arraste o **conteúdo** da pasta `public_html` local para lá.
+**Para publicar uma alteração, daí em diante:**
 
-### Depois de subir
+```bash
+git add -A
+git commit -m "descreva o que mudou"
+git push
+```
 
-- No hPanel, vá em **Segurança → SSL** e instale o certificado (é grátis).
-  Sem isso o navegador mostra "site não seguro" e o `.htaccess` vai ficar
-  redirecionando em loop.
-- Teste no celular e no computador.
-- Se o site não atualizar, dê **Ctrl + F5** (limpa o cache do navegador).
+Depois, no hPanel → **Avançado → Git**, clique em **Deploy**. (Dá para
+automatizar com o webhook que a própria tela mostra, aí nem isso é preciso.)
+
+### Opção B — Upload manual do zip
+
+Se preferir não usar Git:
+
+1. hPanel → **Arquivos → Gerenciador de Arquivos** → entre em `public_html`.
+2. Apague o que estiver lá (`default.php`, `index.html` de exemplo).
+3. **Upload** do `site-formato-para-hostinger.zip`.
+4. Botão direito no zip → **Extrair** → depois apague o zip.
+5. Confirme que o `index.html` ficou direto dentro de `public_html`.
+
+Para regerar o zip depois de mudar alguma coisa, veja a seção 5.
+
+### Depois de publicar, dos dois jeitos
+
+- **Instale o SSL**: hPanel → **Segurança → SSL → Instalar**. É grátis.
+  Sem isso o `.htaccess` força HTTPS e o navegador entra em loop
+  (`ERR_TOO_MANY_REDIRECTS`). Se acontecer, espere o SSL terminar ou renomeie
+  o `.htaccess` para `htaccess.txt` até ficar pronto.
+- Abra o site e dê **Ctrl + F5**.
+- Teste: botão de WhatsApp, o formulário (tem que abrir o WhatsApp com a
+  mensagem pronta), o mapa, e tudo no celular.
 
 ---
 
-## 3. O que ainda falta (importante)
+## 3. O que ainda falta
 
-### 3.1 As fotos — FEITO ✅
+### 3.1 A logo em alta resolução
 
-As 11 fotos já estão no site, escolhidas da pasta `Fotos/`, recortadas no
-formato de cada espaço e comprimidas.
+A logo atual foi recuperada da foto de perfil do Instagram — 150 px. Fica boa
+no tamanho pequeno do cabeçalho, mas não amplia. Se conseguir o arquivo
+original (`.png` transparente, `.ai`, `.cdr` ou `.svg`), substitua
+`img/logo-formato.png` mantendo o mesmo nome.
 
-A tabela de qual original virou qual arquivo, e como trocar qualquer uma
-depois, está em **`public_html/img/LEIA-ME-FOTOS.txt`**.
+### 3.2 O e-mail `contato@formatoesquadrias.com.br`
 
-### 3.2 A logo em alta resolução
+**Ainda não existe.** Enquanto a caixa não for criada, quem clicar no link
+abre o programa de e-mail e a mensagem não chega a lugar nenhum.
 
-A logo que está no site foi recuperada da foto de perfil do Instagram — tem
-resolução baixa (fica boa no tamanho pequeno do cabeçalho, mas não dá para
-ampliar). Se você conseguir o **arquivo original** (`.png` com fundo
-transparente, `.ai`, `.cdr` ou `.svg`), é só substituir
-`public_html/img/logo-formato.png` mantendo o mesmo nome.
+Para criar: hPanel → **E-mails → Contas de e-mail** → criar `contato@`.
+Só funciona depois que o domínio estiver apontado para o Hostinger.
 
 ### 3.3 Informações a confirmar com a empresa
 
-Coloquei no site o que dava para apurar nas redes sociais. **Confira estes
-pontos antes de publicar:**
-
-- **Horário de atendimento** — coloquei "seg. a sex. 8h–18h, sáb. 8h–12h" como
-  suposição. Está em `index.html`, procure por `Atendimento`.
+- **Horário de atendimento** — "seg. a sex. 8h–18h, sáb. 8h–12h" é suposição
+  minha. Procure `Atendimento` no `index.html`.
 - **Endereço** — Av. Paulo Emanuel de Almeida, 1080 — Wanel Ville, Sorocaba/SP
   (tirado do Facebook).
-- **WhatsApp** — (15) 99607-0870. Se mudar, o número aparece em 3 lugares:
-  no `index.html` (procure por `5515996070870`) e no `js/main.js` (variável `ZAP`).
-- **E-mail** — contato@formatoesquadrias.com.br (precisa existir de verdade: crie a
-  caixa no hPanel em **E-mails → Contas de e-mail** depois de apontar o domínio)
-- **Lista de produtos** — hoje são 3: Portas, Janelas e Esquadrias prediais.
+- **WhatsApp** — (15) 99607-0870. Aparece no `index.html` (procure
+  `5515996070870`) e no `js/main.js` (variável `ZAP`).
+- **Produtos** — hoje são 3: Portas, Janelas e Esquadrias prediais.
 - **Curso** — conferir o conteúdo programático que descrevi.
 
 ### 3.4 O domínio
 
-O site está escrito assumindo `www.formatoesquadrias.com.br`. Se o domínio for
-outro, troque em dois lugares:
+O site assume `www.formatoesquadrias.com.br`. Se for outro, troque em:
 
 - `index.html` → linha do `<link rel="canonical" ...>`
 - `sitemap.xml` → dentro da tag `<loc>`
+- `robots.txt` → linha do `Sitemap:`
 
 ---
 
 ## 4. Como mexer no site depois
 
-### Trocar um texto
-Abra `public_html/index.html` em qualquer editor (Bloco de Notas serve,
-VS Code é melhor). Procure o texto, troque, salve e suba o arquivo de novo.
+**Trocar um texto** — abra o `index.html` em qualquer editor, procure o texto,
+troque e salve.
 
-### Trocar uma cor
-Abra `public_html/css/style.css`. Todas as cores estão logo no começo,
-no bloco `:root`, com o nome explicado ao lado. Trocar ali muda o site inteiro.
+**Trocar uma cor** — abra o `css/style.css`. As cores estão no começo, no bloco
+`:root`, cada uma com o nome explicado ao lado. Mudar ali muda o site inteiro.
 
-### O formulário de contato
-Hospedagem estática não envia e-mail. Por isso o formulário **não envia nada**:
-ele monta a mensagem e abre o WhatsApp da empresa já com o texto escrito.
-Funciona no celular e no computador, e não tem risco de mensagem se perder
-numa caixa de spam.
+**Trocar uma foto** — veja `img/LEIA-ME-FOTOS.txt`: tem a tabela de qual foto
+ocupa qual espaço e em que formato cortar.
 
-Se um dia quiser um formulário que mande e-mail de verdade, o caminho mais
-simples é um serviço gratuito como o **Formspree** (formspree.io) — aí a gente
-troca o `<form>` por um que aponta para lá.
+**O formulário de contato** — hospedagem estática não envia e-mail. Por isso o
+formulário não envia nada: ele monta a mensagem e abre o WhatsApp da empresa
+com o texto já escrito. Funciona no celular e no computador, e não corre o
+risco de a mensagem cair no spam. Se um dia quiser um formulário que mande
+e-mail de verdade, o caminho simples é o **Formspree** (formspree.io).
 
 ---
 
-## 5. Ver o site no seu computador antes de subir
+## 5. Ver o site antes de publicar
 
 Abra o PowerShell nesta pasta e rode:
 
 ```bash
-python -m http.server 5599 -d "public_html"
+python -m http.server 5599
 ```
 
-Depois abra no navegador: `http://localhost:5599`
+Depois abra `http://localhost:5599` no navegador. Para parar, `Ctrl + C`.
 
-(Abrir o `index.html` com duplo clique também funciona, mas algumas coisas
-se comportam melhor pelo servidor local.)
+Para regerar o zip de upload manual depois de alterar alguma coisa:
+
+```bash
+git archive --format=zip -o site-formato-para-hostinger.zip HEAD
+```
+
+Esse comando empacota exatamente o que está no último commit — sem as fotos
+originais, sem o zip antigo.
