@@ -1,3 +1,6 @@
+# Dependencias do Node (este site nao usa nenhuma, mas por seguranca)
+node_modules/
+
 # Fotos originais (22 MB) - servem de acervo, nao vao para o servidor
 Fotos/
 

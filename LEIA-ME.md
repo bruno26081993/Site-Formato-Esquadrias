@@ -1,22 +1,27 @@
 # Site da Formato Esquadrias
 
 Site institucional de uma página só, em HTML/CSS/JavaScript puro.
-**Não tem build**: nada de `npm install`, `npm run build`, Node ou TypeScript.
-Os arquivos que estão aqui são exatamente os que rodam no servidor.
+**Não tem build**: nada de `npm run build`, TypeScript ou framework. Os arquivos
+que estão aqui são exatamente os que o navegador lê.
+
+O `server.mjs` e o `package.json` existem só porque a hospedagem contratada é a
+**hospedagem de aplicativos** do Hostinger, que roda um processo Node em vez de
+servir a pasta direto. O servidor não usa nenhuma biblioteca de fora — é o
+Node puro entregando os arquivos desta pasta.
 
 ---
 
 ## 1. O que tem nesta pasta
 
-Esta pasta **é o repositório Git**. Os arquivos do site ficam na raiz, porque o
-deploy por Git do Hostinger clona o repositório direto dentro do `public_html`
-do servidor — se houvesse uma pasta `public_html/` aqui dentro, o site sairia
-em `seudominio.com.br/public_html/`, quebrado.
+Esta pasta **é o repositório Git**. Os arquivos do site ficam na raiz: é de onde
+o `server.mjs` os serve, e é o que a hospedagem espera encontrar ao clonar.
 
 ```
 Site Formato Esquadrias/            ← raiz do repositório
 ├── index.html                      ← a página (todos os textos estão aqui)
-├── .htaccess                       ← gzip, cache, HTTPS, bloqueio do .git
+├── server.mjs                      ← servidor Node (exigência da hospedagem)
+├── package.json                    ← diz à hospedagem como iniciar o site
+├── .htaccess                       ← só vale em hospedagem comum (ver seção 2)
 ├── robots.txt / sitemap.xml        ← para o Google
 ├── css/style.css                   ← cores, fontes, layout
 ├── js/main.js                      ← menu, animações, formulário → WhatsApp
@@ -32,24 +37,23 @@ Site Formato Esquadrias/            ← raiz do repositório
 
 ## 2. Como publicar
 
-### Opção A — Deploy por Git (recomendado)
+### Onde este site está hospedado
 
-Depois de configurado, publicar uma mudança vira um `git push`.
+Na **hospedagem de aplicativos** do Hostinger (a que tem *Implantações*,
+*Variáveis de ambiente* e *Logs de execução* no menu). Ela não serve uma pasta:
+ela clona o repositório, roda `npm start` e espera um processo Node atender na
+porta que ela informa pela variável `PORT`. É isso que o `server.mjs` faz.
 
-**Configuração, uma vez só:**
+> **O `.htaccess` não funciona aqui.** Ele é do Apache, e esta hospedagem não usa
+> Apache. Tudo que ele fazia — gzip, cache, esconder o `.git`, página 404 — está
+> reimplementado dentro do `server.mjs`. O arquivo continua no repositório só
+> para o caso de um dia o site migrar para hospedagem comum.
 
-1. Crie um repositório no GitHub (`github.com/new`). Marque **Public** —
-   repositório privado exige configurar chave SSH no Hostinger.
-   **Não** marque "Add a README file": o repositório precisa nascer vazio.
-2. Conecte esta pasta ao repositório e envie:
-   ```bash
-   git remote add origin https://github.com/SEU-USUARIO/SEU-REPO.git
-   git push -u origin main
-   ```
-3. No hPanel do Hostinger: **Avançado → Git**.
-4. Em *Repositório*, cole a URL do GitHub; em *Branch*, `main`;
-   em *Diretório*, deixe **em branco** (isso significa a raiz do `public_html`).
-5. Clique em **Criar**. O Hostinger clona e o site sobe.
+### Publicar
+
+**Configuração, uma vez só:** no hPanel, importe o repositório
+`bruno26081993/Site-Formato-Esquadrias`, branch `main`. Quando ele perguntar,
+o comando de início é `npm start` (ou `node server.mjs`).
 
 **Para publicar uma alteração, daí em diante:**
 
@@ -59,32 +63,24 @@ git commit -m "descreva o que mudou"
 git push
 ```
 
-Depois, no hPanel → **Avançado → Git**, clique em **Deploy**. (Dá para
-automatizar com o webhook que a própria tela mostra, aí nem isso é preciso.)
+E no hPanel, **Implantações → Deploy**. Se você ligar o deploy automático
+naquela tela, o `git push` sozinho já publica.
 
-### Opção B — Upload manual do zip
+### Se um dia migrar para hospedagem comum
 
-Se preferir não usar Git:
+O `.htaccess` volta a valer e o `server.mjs` passa a ser ignorado — não precisa
+apagar nada. O caminho é: **Arquivos → Gerenciador de Arquivos** → `public_html`
+→ subir o conteúdo do repositório → **Segurança → SSL**.
 
-1. hPanel → **Arquivos → Gerenciador de Arquivos** → entre em `public_html`.
-2. Apague o que estiver lá (`default.php`, `index.html` de exemplo).
-3. **Upload** do `site-formato-para-hostinger.zip`.
-4. Botão direito no zip → **Extrair** → depois apague o zip.
-5. Confirme que o `index.html` ficou direto dentro de `public_html`.
+### Depois de publicar
 
-Para regerar o zip depois de mudar alguma coisa, veja a seção 5.
-
-### Depois de publicar, dos dois jeitos
-
-- **Instale o SSL**: hPanel → **Segurança → SSL → Instalar**. É grátis.
-  Sem isso o `.htaccess` força HTTPS e o navegador entra em loop
-  (`ERR_TOO_MANY_REDIRECTS`). Se acontecer, espere o SSL terminar ou renomeie
-  o `.htaccess` para `htaccess.txt` até ficar pronto.
+- **SSL**: hPanel → **Segurança → SSL**. Nesta hospedagem o certificado costuma
+  ser automático; confirme que o site abre em `https://`.
 - Abra o site e dê **Ctrl + F5**.
 - Teste: botão de WhatsApp, o formulário (tem que abrir o WhatsApp com a
   mensagem pronta), o mapa, e tudo no celular.
-
----
+- Se algo não subir, o menu **Logs de execução** mostra o que o servidor
+  imprimiu — inclusive a linha `Site da Formato Esquadrias rodando na porta N`.
 
 ## 3. O que ainda falta
 
@@ -145,13 +141,16 @@ e-mail de verdade, o caminho simples é o **Formspree** (formspree.io).
 
 ## 5. Ver o site antes de publicar
 
-Abra o PowerShell nesta pasta e rode:
+Abra o PowerShell nesta pasta e rode **o mesmo servidor que roda no Hostinger**:
 
 ```bash
-python -m http.server 5599
+npm start
 ```
 
-Depois abra `http://localhost:5599` no navegador. Para parar, `Ctrl + C`.
+Depois abra `http://localhost:3000` no navegador. Para parar, `Ctrl + C`.
+
+Testar assim é melhor do que abrir o `index.html` com duplo clique: você vê
+exatamente o que o servidor de produção vai entregar, com gzip e cache.
 
 Para regerar o zip de upload manual depois de alterar alguma coisa:
 
