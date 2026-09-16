@@ -6,6 +6,7 @@
   "type": "module",
   "main": "server.mjs",
   "scripts": {
+    "build": "node -e \"console.log('Site estatico: nada para compilar.')\"",
     "start": "node server.mjs"
   },
   "engines": {
