@@ -4,7 +4,7 @@ Site institucional de uma página só, em HTML/CSS/JavaScript puro.
 **Não tem build**: nada de `npm run build`, TypeScript ou framework. Os arquivos
 que estão aqui são exatamente os que o navegador lê.
 
-O `server.mjs` e o `package.json` existem só porque a hospedagem contratada é a
+O `server.js` e o `package.json` existem só porque a hospedagem contratada é a
 **hospedagem de aplicativos** do Hostinger, que roda um processo Node em vez de
 servir a pasta direto. O servidor não usa nenhuma biblioteca de fora — é o
 Node puro entregando os arquivos desta pasta.
@@ -14,12 +14,12 @@ Node puro entregando os arquivos desta pasta.
 ## 1. O que tem nesta pasta
 
 Esta pasta **é o repositório Git**. Os arquivos do site ficam na raiz: é de onde
-o `server.mjs` os serve, e é o que a hospedagem espera encontrar ao clonar.
+o `server.js` os serve, e é o que a hospedagem espera encontrar ao clonar.
 
 ```
 Site Formato Esquadrias/            ← raiz do repositório
 ├── index.html                      ← a página (todos os textos estão aqui)
-├── server.mjs                      ← servidor Node (exigência da hospedagem)
+├── server.js                       ← servidor Node (exigência da hospedagem)
 ├── package.json                    ← diz à hospedagem como iniciar o site
 ├── .htaccess                       ← só vale em hospedagem comum (ver seção 2)
 ├── robots.txt / sitemap.xml        ← para o Google
@@ -42,18 +42,18 @@ Site Formato Esquadrias/            ← raiz do repositório
 Na **hospedagem de aplicativos** do Hostinger (a que tem *Implantações*,
 *Variáveis de ambiente* e *Logs de execução* no menu). Ela não serve uma pasta:
 ela clona o repositório, roda `npm start` e espera um processo Node atender na
-porta que ela informa pela variável `PORT`. É isso que o `server.mjs` faz.
+porta que ela informa pela variável `PORT`. É isso que o `server.js` faz.
 
 > **O `.htaccess` não funciona aqui.** Ele é do Apache, e esta hospedagem não usa
 > Apache. Tudo que ele fazia — gzip, cache, esconder o `.git`, página 404 — está
-> reimplementado dentro do `server.mjs`. O arquivo continua no repositório só
+> reimplementado dentro do `server.js`. O arquivo continua no repositório só
 > para o caso de um dia o site migrar para hospedagem comum.
 
 ### Publicar
 
 **Configuração, uma vez só:** no hPanel, importe o repositório
 `bruno26081993/Site-Formato-Esquadrias`, branch `main`. Quando ele perguntar,
-o comando de início é `npm start` (ou `node server.mjs`).
+o comando de início é `npm start` (ou `node server.js`).
 
 **Para publicar uma alteração, daí em diante:**
 
@@ -68,7 +68,7 @@ naquela tela, o `git push` sozinho já publica.
 
 ### Se um dia migrar para hospedagem comum
 
-O `.htaccess` volta a valer e o `server.mjs` passa a ser ignorado — não precisa
+O `.htaccess` volta a valer e o `server.js` passa a ser ignorado — não precisa
 apagar nada. O caminho é: **Arquivos → Gerenciador de Arquivos** → `public_html`
 → subir o conteúdo do repositório → **Segurança → SSL**.
 

@@ -45,7 +45,7 @@ const TIPOS = {
 /* O que nunca deve ser servido, por mais que peçam. */
 const COMPACTAVEIS = new Set(['.html', '.css', '.js', '.json', '.xml', '.txt', '.svg']);
 const PROIBIDOS    = new Set(['.md', '.mjs']);   // documentação e o próprio servidor
-const NOMES_PROIBIDOS = new Set(['package.json', 'package-lock.json']);
+const NOMES_PROIBIDOS = new Set(['package.json', 'package-lock.json', 'server.js']);
 
 /* Cliente desistiu no meio do download: normal, não é erro nosso. */
 const DESCONEXAO = new Set(['ERR_STREAM_PREMATURE_CLOSE', 'EPIPE', 'ECONNRESET']);
