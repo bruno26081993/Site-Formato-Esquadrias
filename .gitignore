@@ -1,0 +1,11 @@
+# Fotos originais (22 MB) - servem de acervo, nao vao para o servidor
+Fotos/
+
+# Pacote de upload manual - e gerado a partir dos arquivos versionados
+site-formato-para-hostinger.zip
+site-formato-para-hostinger/
+
+# Lixo do Windows / OneDrive
+desktop.ini
+Thumbs.db
+.DS_Store

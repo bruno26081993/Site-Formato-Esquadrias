@@ -1,0 +1,43 @@
+# ---------- Formato Esquadrias | configuracao basica do servidor ----------
+
+# Pagina inicial
+DirectoryIndex index.html
+
+# Compactacao (site carrega mais rapido)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache do navegador
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 1 hour"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+</IfModule>
+
+# Forca HTTPS (deixe ativo depois de instalar o certificado SSL no Hostinger)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ---------- Protecoes para deploy por Git ----------
+# O deploy por Git deixa a pasta .git dentro do public_html. Sem esta regra,
+# qualquer um acessa seudominio.com.br/.git/config e baixa o historico inteiro.
+RedirectMatch 404 /\.git
+
+# Nao serve os arquivos de documentacao do repositorio
+<IfModule mod_authz_core.c>
+  <FilesMatch "\.md$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+# Paginas de erro
+ErrorDocument 404 /index.html
